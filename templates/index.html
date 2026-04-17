@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Fire Account Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #16213e;
+            border-radius: 10px;
+        }
+        
+        h1 {
+            color: #00b4d8;
+            margin-bottom: 10px;
+        }
+        
+        .main-content {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-panel {
+            flex: 1;
+            min-width: 300px;
+            background: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .output-panel {
+            flex: 2;
+            min-width: 500px;
+            background: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #00b4d8;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 8px;
+            background: #2d3047;
+            border: 1px solid #00b4d8;
+            border-radius: 5px;
+            color: white;
+        }
+        
+        .btn {
+            background: #00b4d8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            background: #0077b6;
+        }
+        
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        
+        .btn-stop {
+            background: #e63946;
+        }
+        
+        .btn-stop:hover {
+            background: #d90429;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00b4d8;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+        
+        .output-content {
+            height: 500px;
+            overflow-y: auto;
+            background: #2d3047;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        
+        .account-card {
+            background: #1a1a2e;
+            border: 1px solid #00b4d8;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .account-card.rare {
+            border-color: #ffd700;
+            background: #2d2a00;
+        }
+        
+        .account-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .account-number {
+            color: #00b4d8;
+            font-weight: bold;
+        }
+        
+        .badge {
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+        }
+        
+        .badge-normal {
+            background: #00b4d8;
+        }
+        
+        .badge-rare {
+            background: #ffd700;
+            color: black;
+        }
+        
+        .account-details {
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #2d3047;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #00b4d8;
+            border-radius: 5px;
+            transition: width 0.3s;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background: #00b4d8;
+            border-radius: 5px;
+            animation: slideIn 0.3s;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Free Fire Account Generator</h1>
+            <p>Generate Free Fire guest accounts with rarity detection</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="control-panel">
+                <div class="control-group">
+                    <label for="accountName">Account Name Prefix</label>
+                    <input type="text" id="accountName" value="BLACK_APIs">
+                </div>
+                
+                <div class="control-group">
+                    <label for="passwordPrefix">Password Prefix</label>
+                    <input type="text" id="passwordPrefix" value="FF2024">
+                </div>
+                
+                <div class="control-group">
+                    <label for="region">Region</label>
+                    <select id="region">
+                        {% for region, lang in REGION_LANG.items() %}
+                        <option value="{{ region }}">{{ region }} ({{ lang }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="count">Number of Accounts (Max 100)</label>
+                    <input type="number" id="count" value="10" min="1" max="100">
+                </div>
+                
+                <div class="control-group">
+                    <label for="threads">Threads (Max 10)</label>
+                    <input type="range" id="threads" min="1" max="10" value="3">
+                    <span id="threadsValue">3</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="threshold">Rarity Threshold: <span id="thresholdValue">3</span></label>
+                    <input type="range" id="threshold" min="1" max="10" value="3">
+                </div>
+                
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="ghostMode"> Enable GHOST Mode
+                    </label>
+                </div>
+                
+                <button class="btn" id="startBtn" onclick="startGeneration()">Start Generation</button>
+                <button class="btn btn-stop" id="stopBtn" onclick="stopGeneration()" disabled>Stop</button>
+                
+                <div class="control-group" style="margin-top: 20px;">
+                    <h3>Global Stats</h3>
+                    <div class="stats" id="globalStats">
+                        <div class="stat-item">
+                            <div class="stat-value">0</div>
+                            <div class="stat-label">Accounts</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">0</div>
+                            <div class="stat-label">Rare</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">0</div>
+                            <div class="stat-label">Couples</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="output-panel">
+                <h2>Generated Accounts</h2>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalGenerated">0</div>
+                        <div class="stat-label">Total</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalRare">0</div>
+                        <div class="stat-label">Rare</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalCouples">0</div>
+                        <div class="stat-label">Couples</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="currentSpeed">0</div>
+                        <div class="stat-label">Speed</div>
+                    </div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                <div style="text-align: center;" id="progressText">0%</div>
+                
+                <div class="output-content" id="outputContent">
+                    <div style="text-align: center; padding: 50px;">
+                        <div style="border: 4px solid #00b4d8; border-left-color: transparent; width: 40px; height: 40px; border-radius: 50%; margin: 0 auto 20px; animation: spin 1s linear infinite;"></div>
+                        <p>Waiting for generation to start...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentSessionId = null;
+        let eventSource = null;
+        let startTime = null;
+        
+        // Update sliders
+        document.getElementById('threads').addEventListener('input', function() {
+            document.getElementById('threadsValue').textContent = this.value;
+        });
+        
+        document.getElementById('threshold').addEventListener('input', function() {
+            document.getElementById('thresholdValue').textContent = this.value;
+        });
+        
+        // Load statistics
+        async function loadStatistics() {
+            try {
+                const response = await fetch('/stats');
+                const data = await response.json();
+                
+                document.getElementById('globalStats').innerHTML = `
+                    <div class="stat-item">
+                        <div class="stat-value">${data.total_accounts}</div>
+                        <div class="stat-label">Accounts</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${data.total_rare}</div>
+                        <div class="stat-label">Rare</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${data.total_couples}</div>
+                        <div class="stat-label">Couples</div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+        
+        // Start generation
+        async function startGeneration() {
+            const accountName = document.getElementById('accountName').value.trim();
+            const passwordPrefix = document.getElementById('passwordPrefix').value.trim();
+            const region = document.getElementById('region').value;
+            const count = parseInt(document.getElementById('count').value);
+            const threshold = parseInt(document.getElementById('threshold').value);
+            const ghostMode = document.getElementById('ghostMode').checked;
+            const threads = parseInt(document.getElementById('threads').value);
+            
+            if (!accountName || !passwordPrefix) {
+                showNotification('Please enter account name and password', 'error');
+                return;
+            }
+            
+            if (count < 1 || count > 100) {
+                showNotification('Please enter 1-100 accounts', 'error');
+                return;
+            }
+            
+            // Disable start button
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            
+            // Clear output
+            document.getElementById('outputContent').innerHTML = `
+                <div style="text-align: center; padding: 50px;">
+                    <div style="border: 4px solid #00b4d8; border-left-color: transparent; width: 40px; height: 40px; border-radius: 50%; margin: 0 auto 20px; animation: spin 1s linear infinite;"></div>
+                    <p>Starting generation...</p>
+                </div>
+            `;
+            
+            // Reset counters
+            document.getElementById('totalGenerated').textContent = '0';
+            document.getElementById('totalRare').textContent = '0';
+            document.getElementById('totalCouples').textContent = '0';
+            document.getElementById('currentSpeed').textContent = '0';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressText').textContent = '0%';
+            
+            startTime = Date.now();
+            
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        account_name: accountName,
+                        password_prefix: passwordPrefix,
+                        region: region,
+                        count: count,
+                        threshold: threshold,
+                        ghost_mode: ghostMode,
+                        threads: threads
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentSessionId = data.session_id;
+                    showNotification('Generation started!');
+                    startEventStream(currentSessionId);
+                } else {
+                    showNotification('Failed to start: ' + data.message, 'error');
+                    resetButtons();
+                }
+            } catch (error) {
+                showNotification('Error: ' + error.message, 'error');
+                resetButtons();
+            }
+        }
+        
+        // Start event stream
+        function startEventStream(sessionId) {
+            if (eventSource) {
+                eventSource.close();
+            }
+            
+            eventSource = new EventSource(`/stream/${sessionId}`);
+            
+            eventSource.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleEvent(data);
+                } catch (error) {
+                    console.error('Error parsing event:', error);
+                }
+            };
+            
+            eventSource.onerror = function(error) {
+                console.error('Event stream error:', error);
+                if (eventSource.readyState === EventSource.CLOSED) {
+                    showNotification('Generation completed');
+                    resetButtons();
+                    loadStatistics();
+                }
+            };
+        }
+        
+        // Handle events
+        function handleEvent(data) {
+            switch (data.type) {
+                case 'status':
+                    showNotification(data.message);
+                    break;
+                    
+                case 'account':
+                    updateCounters(data);
+                    displayAccount(data);
+                    break;
+                    
+                case 'rare':
+                    showNotification(data.message + ': ' + data.details, 'rare');
+                    break;
+                    
+                case 'couple':
+                    showNotification(data.message + ': ' + data.details, 'couple');
+                    break;
+                    
+                case 'error':
+                    showNotification('Error: ' + data.message, 'error');
+                    break;
+                    
+                case 'complete':
+                    showNotification('Generation complete!');
+                    displaySummary(data.summary);
+                    resetButtons();
+                    loadStatistics();
+                    break;
+            }
+        }
+        
+        // Update counters
+        function updateCounters(data) {
+            document.getElementById('totalGenerated').textContent = data.count;
+            document.getElementById('totalRare').textContent = data.total_rare;
+            document.getElementById('totalCouples').textContent = data.total_couples;
+            document.getElementById('currentSpeed').textContent = data.speed ? data.speed.toFixed(1) : '0';
+            
+            // Update progress
+            const progress = (data.count / data.total) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent = `${progress.toFixed(1)}%`;
+        }
+        
+        // Display account
+        function displayAccount(data) {
+            // Remove loading spinner if present
+            const loading = document.getElementById('outputContent').querySelector('div[style*="animation: spin"]');
+            if (loading) {
+                loading.parentElement.remove();
+            }
+            
+            const account = data.account;
+            const cardClass = data.is_rare ? 'rare' : '';
+            const badgeClass = data.is_rare ? 'badge-rare' : 'badge-normal';
+            const badgeText = data.is_rare ? 'RARE' : 'NORMAL';
+            
+            const accountCard = document.createElement('div');
+            accountCard.className = `account-card ${cardClass}`;
+            accountCard.innerHTML = `
+                <div class="account-header">
+                    <div class="account-number">Account #${data.count}</div>
+                    <div class="badge ${badgeClass}">${badgeText}</div>
+                </div>
+                <div class="account-details">
+                    <div>Name: ${account.name}</div>
+                    <div>UID: ${account.uid}</div>
+                    <div>Account ID: ${account.account_id || 'N/A'}</div>
+                    <div>Password: ${account.password}</div>
+                    <div>Region: ${account.region}</div>
+                    ${data.is_rare ? `<div>Rarity Score: ${data.rarity_score}</div>` : ''}
+                </div>
+            `;
+            
+            const outputContent = document.getElementById('outputContent');
+            outputContent.prepend(accountCard);
+            
+            // Limit to 20 displayed accounts
+            const cards = outputContent.getElementsByClassName('account-card');
+            if (cards.length > 20) {
+                cards[20].remove();
+            }
+        }
+        
+        // Display summary
+        function displaySummary(summary) {
+            const summaryCard = document.createElement('div');
+            summaryCard.className = 'account-card';
+            summaryCard.innerHTML = `
+                <div class="account-header">
+                    <div class="account-number">🎉 Generation Complete!</div>
+                </div>
+                <div class="account-details">
+                    <div>Requested: ${summary.total_requested}</div>
+                    <div>Generated: ${summary.total_generated}</div>
+                    <div>Rare Found: ${summary.rare_found}</div>
+                    <div>Couples Found: ${summary.couples_found}</div>
+                    <div>Duration: ${summary.duration.toFixed(2)}s</div>
+                    <div>Speed: ${summary.speed.toFixed(2)} accounts/sec</div>
+                </div>
+            `;
+            
+            const outputContent = document.getElementById('outputContent');
+            outputContent.prepend(summaryCard);
+        }
+        
+        // Stop generation
+        async function stopGeneration() {
+            if (!currentSessionId) return;
+            
+            try {
+                await fetch(`/stop/${currentSessionId}`);
+                showNotification('Generation stopped');
+                resetButtons();
+            } catch (error) {
+                showNotification('Error stopping: ' + error.message, 'error');
+            }
+        }
+        
+        // Reset buttons
+        function resetButtons() {
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+            }
+        }
+        
+        // Show notification
+        function showNotification(message, type = 'normal') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            notification.style.background = type === 'error' ? '#e63946' : 
+                                          type === 'rare' ? '#ffd700' : 
+                                          type === 'couple' ? '#ff6b8b' : '#00b4d8';
+            notification.style.color = type === 'rare' ? 'black' : 'white';
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        // Load initial stats
+        loadStatistics();
+        setInterval(loadStatistics, 30000);
+        
+        // CSS animation for spinner
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
